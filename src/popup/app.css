@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 20 40% 10%;
+    --foreground: 26 73% 96%;
+    --card: 20 40% 15%;
+    --card-foreground: 26 73% 96%;
+    --popover: 20 40% 15%;
+    --popover-foreground: 26 73% 96%;
+    --primary: 346 75% 47%;
+    --primary-foreground: 26 73% 96%;
+    --secondary: 20 40% 20%;
+    --secondary-foreground: 26 73% 96%;
+    --muted: 20 40% 20%;
+    --muted-foreground: 60 30% 70%;
+    --accent: 346 75% 30%;
+    --accent-foreground: 26 73% 96%;
+    --destructive: 0 85% 60%;
+    --destructive-foreground: 26 73% 96%;
+    --border: 20 40% 30%;
+    --input: 20 40% 30%;
+    --ring: 346 75% 47%;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@font-face {
+  font-family: "Geist";
+  src: url("./../assets/fonts/geist/Geist-UltraLight.otf") format("opentype");
+  font-weight: 200;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Geist";
+  src: url("./../assets/fonts/geist/Geist-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Geist";
+  src: url("./../assets/fonts/geist/Geist-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Geist";
+  src: url("./../assets/fonts/geist/Geist-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Geist";
+  src: url("./../assets/fonts/geist/Geist-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Geist";
+  src: url("./../assets/fonts/geist/Geist-Black.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Geist";
+  src: url("./../assets/fonts/geist/Geist-UltraBlack.otf") format("opentype");
+  font-weight: 950;
+  font-style: normal;
+}
+
+::selection {
+  color: hsl(var(--accent-foreground));
+  background: hsl(var(--accent));
+}
+
+::-moz-selection {
+  /* Code for Firefox */
+  color: hsl(var(--accent-foreground));
+  background: hsl(var(--accent));
+}
