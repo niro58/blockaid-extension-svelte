@@ -21,6 +21,7 @@
   import { Input } from "$lib/components/ui/input";
   const urlController = setUrlController();
   import CurrentPageBlock from "$lib/components/current-page-block.svelte";
+  import { fade, fly } from "svelte/transition";
   let currentPage = $state("");
 
   function addPage() {
@@ -97,10 +98,12 @@
                 </div>
 
                 <ScrollArea class="mt-4 h-52">
-                  <div class="space-y-2">
+                  <div class="space-y-2" in:fade={{ duration: 200 }}>
                     {#each urlController.pages as page}
                       <div
                         class="flex items-center justify-between rounded-lg border px-3 text-sm"
+                        in:fly={{ duration: 200, x: 20 }}
+                        out:fly={{ duration: 200, x: 20 }}
                       >
                         <div class="flex items-center space-x-2">
                           <span class="truncate max-w-[150px]">
@@ -221,8 +224,10 @@
         </div>
       </Tabs.Root>
       <div class="mt-2">
-        {#each urlController.messages as message}
+        {#each urlController.messages as message (message.id)}
           <div
+            in:fly={{ duration: 200, y: 20 }}
+            out:fly={{ duration: 200, y: 20 }}
             class="{message.type === 'success'
               ? 'bg-green-500/50 text-green-100 border border-green-500'
               : 'bg-red-500/50 text-red-100 border border-red-500'} py-2 px-4 rounded mb-2"

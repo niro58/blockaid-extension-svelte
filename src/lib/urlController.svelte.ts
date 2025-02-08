@@ -1,4 +1,4 @@
-import { getContext, setContext } from "svelte";
+import { getContext, onMount, setContext } from "svelte";
 import { isValidUrl, trimUrl } from "./utils";
 
 export type BlockedUrl = {
@@ -12,44 +12,46 @@ export type Message = {
   message: string;
   type: MessageType;
 };
-
+export type Settings = {
+  enabled: boolean;
+  workHour: {
+    start: number;
+    end: number;
+  };
+  blockOnWeekends?: boolean;
+};
 export class UrlController {
   messages: Message[] = $state([]);
-  pages: BlockedUrl[] = $state(
-    localStorage.getItem("pages")
-      ? JSON.parse(localStorage.getItem("pages")!)
-      : []
-  );
-  settings: {
-    enabled: boolean;
+  pages: BlockedUrl[] = $state([]);
+  settings: Settings = $state({
+    enabled: true,
     workHour: {
-      start: number;
-      end: number;
-    };
-    blockOnWeekends?: boolean;
-  } = $state(
-    localStorage.getItem("settings")
-      ? JSON.parse(localStorage.getItem("settings")!)
-      : {
-          enabled: true,
-          workHour: {
-            start: 0,
-            end: 60 * 24,
-          },
-          blockOnWeekends: true,
-        }
-  );
+      start: 0,
+      end: 60 * 24,
+    },
+    blockOnWeekends: false,
+  });
   constructor() {
+    onMount(() => {
+      chrome.storage.sync.get("pages").then((data) => {
+        this.pages = Object.values(data.pages) || [];
+        console.log("Pages", this.pages);
+      });
+      chrome.storage.sync.get("settings").then((data) => {
+        this.settings = data.settings || this.settings;
+        console.log("Settings", this.settings);
+      });
+    });
     $effect(() => {
       if (this.messages.length > 2) {
         this.messages.pop();
       }
     });
     $effect(() => {
-      localStorage.setItem("pages", JSON.stringify(this.pages));
+      chrome.storage.sync.set({ pages: this.pages });
     });
     $effect(() => {
-      localStorage.setItem("settings", JSON.stringify(this.settings));
+      chrome.storage.sync.set({ settings: this.settings });
     });
   }
 
@@ -58,7 +60,7 @@ export class UrlController {
     this.messages = [{ id, message, type }, ...this.messages];
     setTimeout(() => {
       this.messages = this.messages.filter((message) => message.id !== id);
-    }, 1000000);
+    }, 2500);
   }
   addPage(url: string) {
     const trimmedUrl = trimUrl(url, "url");
@@ -68,7 +70,7 @@ export class UrlController {
       this.addMessage(urlValidity, "error");
       return;
     }
-
+    console.log(this.pages);
     this.pages.push({
       id: Date.now(),
       url: trimmedUrl,

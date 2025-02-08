@@ -21,6 +21,9 @@ export function trimUrl(url: string, type: "url" | "domain" | "starts-with") {
     }
     url += "*";
   }
+  if (url.endsWith("/")) {
+    url = url.slice(0, -1);
+  }
   return url;
 }
 export function isValidUrl(url: string, existingWebsites: BlockedUrl[]) {
