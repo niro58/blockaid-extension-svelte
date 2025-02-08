@@ -1,5 +1,5 @@
 <script module>
-  const times = Array.from({ length: 96 }, (_, i) => {
+  const times = Array.from({ length: 97 }, (_, i) => {
     const hour = Math.floor(i / 4);
     const minute = (i % 4) * 15;
     return `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
@@ -43,7 +43,7 @@
     <ChevronsUpDown class="opacity-50" />
   </Popover.Trigger>
 
-  <Popover.Content class="w-[200px] p-0">
+  <Popover.Content class="w-[100px] h-[150px] p-0">
     <Command.Root>
       <Command.Input autofocus placeholder="Time ..." class="h-9" />
       <Command.Empty>No time found.</Command.Empty>

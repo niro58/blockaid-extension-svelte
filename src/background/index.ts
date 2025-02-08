@@ -1,26 +1,36 @@
 import type { BlockedUrl, Settings } from "$lib/urlController.svelte";
 import { trimUrl } from "$lib/utils";
-function isEnabled(settings: Settings) {
+function isBlockingActive(settings: Settings) {
   if (!settings.enabled) {
     return false;
   }
   const now = new Date();
   const hour = now.getHours();
-  if (hour < settings.workHour.start || hour > settings.workHour.end) {
-    return false;
-  }
+  const minutes = now.getMinutes();
+  const totalMinutes = hour * 60 + minutes;
   const isWeekend = now.getDay() === 0 || now.getDay() === 6;
-  if (isWeekend && !settings.blockOnWeekends) {
-    return false;
+  const isWorkHour =
+  totalMinutes >= settings.workHour.start && totalMinutes <= settings.workHour.end;
+  console.log("Hour", hour);
+  console.log("Is enabled", true);
+  console.log("Is weekend", isWeekend);
+  console.log("Is work hour", isWorkHour);
+  console.log("Settings", settings);
+  if (isWorkHour) {
+    if (isWeekend && settings.blockOnWeekends) {
+      return true;
+    } else if (!isWeekend) {
+      return true;
+    }
   }
 
-  return true;
+  return false;
 }
 chrome.webNavigation.onBeforeNavigate.addListener(async function (details) {
   const { url, tabId } = details;
-  
+
   if (url === "about:blank") return;
-  
+
   const trimmedUrl = trimUrl(url, "url");
 
   const [p, s] = await Promise.all([
@@ -32,9 +42,12 @@ chrome.webNavigation.onBeforeNavigate.addListener(async function (details) {
   }
   const pages: BlockedUrl[] = Object.values(p.pages);
   const settings: Settings = s.settings;
-  if (!isEnabled(settings)) {
+
+  if (!isBlockingActive(settings)) {
+    console.log("Not enabled");
     return;
   }
+  console.log("Trimmed url", trimmedUrl);
 
   const startsWithPages = pages.filter((page: BlockedUrl) =>
     page.url.endsWith("*")
@@ -45,10 +58,10 @@ chrome.webNavigation.onBeforeNavigate.addListener(async function (details) {
       trimmedUrl.startsWith(page.url.slice(0, -1))
     ).length === 0;
 
-  console.log("Trimmed url", trimmedUrl);
-  console.log("Pages", pages);
-  console.log("Starts with pages", startsWithPages);
-  console.log("Is valid url", isValidUrl);
+  // console.log("Trimmed url", trimmedUrl);
+  // console.log("Pages", pages);
+  // console.log("Starts with pages", startsWithPages);
+  // console.log("Is valid url", isValidUrl);
 
   if (isValidUrl) {
     return;

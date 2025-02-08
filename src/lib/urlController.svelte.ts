@@ -4,7 +4,6 @@ import { isValidUrl, trimUrl } from "./utils";
 export type BlockedUrl = {
   id: number;
   url: string;
-  timeLimitDaily: boolean;
 };
 export type MessageType = "error" | "success";
 export type Message = {
@@ -70,11 +69,10 @@ export class UrlController {
       this.addMessage(urlValidity, "error");
       return;
     }
-    console.log(this.pages);
+
     this.pages.push({
       id: Date.now(),
       url: trimmedUrl,
-      timeLimitDaily: true,
     });
 
     this.addMessage("Page added", "success");

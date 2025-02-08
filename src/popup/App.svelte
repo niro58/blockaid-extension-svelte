@@ -140,8 +140,8 @@
                   size="icon"
                   onclick={() => {
                     urlController.settings.workHour.start = 0;
-                    urlController.settings.workHour.end = 0;
-                    urlController.settings.blockOnWeekends = false;
+                    urlController.settings.workHour.end = 24 * 60;
+                    urlController.settings.blockOnWeekends = true;
                   }}
                 >
                   <RotateCw class="h-4 w-4" />
@@ -149,8 +149,8 @@
               </Card.Header>
               <Card.Content class="px-6 py-0">
                 <div class="space-y-4">
-                  <div class="flex flex-col">
-                    <div class="text-md font-bold">Work Hours</div>
+                  <div class="flex flex-col gap-2">
+                    <div class="text-lg font-bold">Work Hours</div>
                     <div class="grid grid-cols-2 space-x-2">
                       <div>
                         <Label for="work-hour-start">From</Label>
