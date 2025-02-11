@@ -10,12 +10,9 @@ function isBlockingActive(settings: Settings) {
   const totalMinutes = hour * 60 + minutes;
   const isWeekend = now.getDay() === 0 || now.getDay() === 6;
   const isWorkHour =
-  totalMinutes >= settings.workHour.start && totalMinutes <= settings.workHour.end;
-  console.log("Hour", hour);
-  console.log("Is enabled", true);
-  console.log("Is weekend", isWeekend);
-  console.log("Is work hour", isWorkHour);
-  console.log("Settings", settings);
+    totalMinutes >= settings.workHour.start &&
+    totalMinutes <= settings.workHour.end;
+
   if (isWorkHour) {
     if (isWeekend && settings.blockOnWeekends) {
       return true;
@@ -55,13 +52,8 @@ chrome.webNavigation.onBeforeNavigate.addListener(async function (details) {
   const isValidUrl =
     pages.filter((page: BlockedUrl) => page.url === trimmedUrl).length === 0 &&
     startsWithPages.filter((page: BlockedUrl) =>
-      trimmedUrl.startsWith(page.url.slice(0, -1))
+      trimmedUrl.startsWith(page.url.slice(0, -2))
     ).length === 0;
-
-  // console.log("Trimmed url", trimmedUrl);
-  // console.log("Pages", pages);
-  // console.log("Starts with pages", startsWithPages);
-  // console.log("Is valid url", isValidUrl);
 
   if (isValidUrl) {
     return;

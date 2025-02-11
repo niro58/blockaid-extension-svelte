@@ -40,10 +40,15 @@
       <div class="mb-4 flex items-center justify-between">
         <div>
           <h1 class="text-lg font-semibold">FocusGuard</h1>
-          <a
-            href="https://tivoku.com/website-blocker"
+          <button
+            onclick={(e) => {
+              e.preventDefault();
+              chrome.tabs.create({
+                url: "https://tivoku.com/website-blocker",
+              });
+            }}
             class="text-sm text-muted-foreground hover:text-primary underline"
-            >About</a
+            >About</button
           >
         </div>
         <div class="flex items-center justify-between">
