@@ -23,43 +23,61 @@ function isBlockingActive(settings: Settings) {
 
   return false;
 }
-chrome.webNavigation.onBeforeNavigate.addListener(async function (details) {
-  const { url, tabId } = details;
-
-  if (url === "about:blank") return;
-
-  const trimmedUrl = trimUrl(url, "url");
-
+async function toRedirect(url: string): Promise<boolean> {
   const [p, s] = await Promise.all([
     chrome.storage.sync.get("pages"),
     chrome.storage.sync.get("settings"),
   ]);
   if (!p || !p.pages || !s || !s.settings) {
-    return;
+    return false;
   }
   const pages: BlockedUrl[] = Object.values(p.pages);
   const settings: Settings = s.settings;
 
   if (!isBlockingActive(settings)) {
     console.log("Not enabled");
-    return;
+    return false;
   }
-  console.log("Trimmed url", trimmedUrl);
+  console.log("Trimmed url", url);
 
   const startsWithPages = pages.filter((page: BlockedUrl) =>
     page.url.endsWith("*")
   );
   const isValidUrl =
-    pages.filter((page: BlockedUrl) => page.url === trimmedUrl).length === 0 &&
+    pages.filter((page: BlockedUrl) => page.url === url).length === 0 &&
     startsWithPages.filter((page: BlockedUrl) =>
-      trimmedUrl.startsWith(page.url.slice(0, -2))
+      url.startsWith(page.url.slice(0, -2))
     ).length === 0;
 
   if (isValidUrl) {
-    return;
+    return false;
   }
+  return true;
+}
+chrome.webNavigation.onBeforeNavigate.addListener(async function (details) {
+  const { url, tabId } = details;
 
-  chrome.tabs.update(tabId, {
-    url: "https://tivoku.com/website-blocker/blocked",
-  });
+  if (url === "about:blank") return;
+
+  const trimmedUrl = trimUrl(url, "url");
+  if (await toRedirect(trimmedUrl)) {
+    chrome.tabs.update(tabId, {
+      url: "https://tivoku.com/website-blocker/blocked",
+    });
+  }
+});
+chrome.tabs.onUpdated.addListener(async (id, _, tab) => {
+  const { url } = tab;
+
+  if (url === "about:blank" || !url) return;
+
+  const trimmedUrl = trimUrl(url, "url");
+  console.log(trimmedUrl);
+  console.log(await toRedirect(trimmedUrl));
+
+  if (await toRedirect(trimmedUrl)) {
+    chrome.tabs.update(id, {
+      url: "https://tivoku.com/website-blocker/blocked",
+    });
+  }
 });

@@ -32,14 +32,14 @@
   }
 </script>
 
-<main>
+<main class="absolute top-16 left-16">
   <div
     class="bg-gradient-to-b from-card to-background w-[400px] min-h-[200px] border"
   >
     <div class="p-4 w-full">
       <div class="mb-4 flex items-center justify-between">
         <div>
-          <h1 class="text-lg font-semibold">FocusGuard</h1>
+          <h1 class="text-lg font-semibold">BlockAid</h1>
           <button
             onclick={(e) => {
               e.preventDefault();
@@ -107,6 +107,7 @@
                     {#each urlController.pages as page}
                       <div
                         class="flex items-center justify-between rounded-lg border px-3 text-sm"
+                        title={page.url}
                         in:fly={{ duration: 200, x: 20 }}
                         out:fly={{ duration: 200, x: 20 }}
                       >

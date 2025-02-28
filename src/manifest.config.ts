@@ -12,7 +12,7 @@ const [major, minor, patch] = version
 
 export default defineManifest(async () => ({
   manifest_version: 3,
-  name: "FocusGuard: Website Blocker",
+  name: "BlockAid: Website Blocker",
   description:
     "Block distracting websites and boost your productivity. Add domains and block current pages all in one easy-to-use Chrome extension.",
   version: `${major}.${minor}.${patch}`,

@@ -13,10 +13,10 @@ export default defineConfig({
     },
   },
   server: {
-    port: 5174,
+    port: 5177,
     strictPort: true,
     hmr: {
-      clientPort: 5174,
+      clientPort: 5177,
     },
   },
 });
