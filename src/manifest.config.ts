@@ -27,7 +27,7 @@ export default defineManifest(async () => ({
     service_worker: "src/background/index.ts",
   },
   action: {
-    default_popup: "src/popup/main.html",
+    default_popup: "index.html",
     default_icon: {
       // "16": "src/assets/icons/icon-16.png",
       // "32": "src/assets/icons/icon-32.png",

@@ -32,7 +32,7 @@
   }
 </script>
 
-<main class="absolute top-16 left-16">
+<main>
   <div
     class="bg-gradient-to-b from-card to-background w-[400px] min-h-[200px] border"
   >

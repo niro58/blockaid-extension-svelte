@@ -12,7 +12,6 @@ export function trimUrl(url: string, type: "url" | "domain" | "starts-with") {
   url = url.replace("https://", "").replace("http://", "").replace("www.", "");
   if (type === "domain") {
     url = url.split("/")[0];
-    url = url.split(".").slice(-2).join(".");
   }
   url = url.split("?")[0];
   if (type === "starts-with" || type === "domain") {
@@ -33,18 +32,14 @@ export function isValidUrl(url: string, existingWebsites: BlockedUrl[]) {
   ) {
     return "Invalid characters in URL";
   }
-  const parts = url.split(".");
-  if (parts.length != 2 || parts[0].length < 1 || parts[1].length < 2) {
-    return "Invalid URL format";
+  if (url.startsWith("tivoku.com")) {
+    return "You can't block the website blocker :)";
   }
 
-  const invalidWebsites = ["tivoku.com"];
   if (existingWebsites.filter((w) => w.url === url).length > 0) {
     return "Website is already in the list";
   }
-  if (invalidWebsites.includes(url)) {
-    return "Invalid URL";
-  }
+
   return true;
 }
 

@@ -1,7 +1,7 @@
 {
   "name": "website-blocker-svelte-extension",
   "private": true,
-  "version": "1.1.4",
+  "version": "1.1.5",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -14,6 +14,7 @@
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "@tsconfig/svelte": "^5.0.4",
     "@types/chrome": "^0.0.302",
+    "@types/node": "^22.13.9",
     "autoprefixer": "^10.4.20",
     "bits-ui": "1.0.0-next.87",
     "clsx": "^2.1.1",
