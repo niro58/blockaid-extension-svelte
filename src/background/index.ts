@@ -23,61 +23,74 @@ function isBlockingActive(settings: Settings) {
 
   return false;
 }
-async function toRedirect(url: string): Promise<boolean> {
+
+
+async function shouldBlockUrl(url: string): Promise<boolean> {
   const [p, s] = await Promise.all([
     chrome.storage.sync.get("pages"),
     chrome.storage.sync.get("settings"),
   ]);
+
   if (!p || !p.pages || !s || !s.settings) {
     return false;
   }
+
   const pages: BlockedUrl[] = Object.values(p.pages);
   const settings: Settings = s.settings;
 
   if (!isBlockingActive(settings)) {
-    console.log("Not enabled");
     return false;
   }
-  console.log("Trimmed url", url);
-
-  const startsWithPages = pages.filter((page: BlockedUrl) =>
-    page.url.endsWith("*")
-  );
-  const isValidUrl =
-    pages.filter((page: BlockedUrl) => page.url === url).length === 0 &&
-    startsWithPages.filter((page: BlockedUrl) =>
-      url.startsWith(page.url.slice(0, -2))
-    ).length === 0;
-
-  if (isValidUrl) {
-    return false;
-  }
-  return true;
-}
-chrome.webNavigation.onBeforeNavigate.addListener(async function (details) {
-  const { url, tabId } = details;
-
-  if (url === "about:blank") return;
 
   const trimmedUrl = trimUrl(url, "url");
-  if (await toRedirect(trimmedUrl)) {
+  // Check exact URL matches
+  const exactMatch = pages.some((page: BlockedUrl) =>
+    !page.url.endsWith("*") && page.url === trimmedUrl
+  );
+
+  if (exactMatch) {
+    return true;
+  }
+
+  // Check wildcard matches
+  const wildcardMatch = pages.some((page: BlockedUrl) =>
+    page.url.endsWith("*") && trimmedUrl.startsWith(page.url.slice(0, -1))
+  );
+
+  return wildcardMatch;
+}
+
+chrome.webNavigation.onCommitted.addListener(async function (details) {
+  if (details.frameId !== 0) return;
+
+  const { url, tabId } = details;
+
+  if (url === "about:blank" || url.startsWith("chrome://") || url.startsWith("chrome-extension://")) {
+    return;
+  }
+  if (await shouldBlockUrl(url)) {
     chrome.tabs.update(tabId, {
       url: "https://tivoku.com/website-blocker/blocked",
     });
   }
 });
-chrome.tabs.onUpdated.addListener(async (id, _, tab) => {
-  const { url } = tab;
 
-  if (url === "about:blank" || !url) return;
+chrome.tabs.onActivated.addListener(async (activeInfo) => {
+  try {
+    const tab = await chrome.tabs.get(activeInfo.tabId);
+    if (!tab.url || tab.url === "about:blank" || tab.url.startsWith("chrome://") || tab.url.startsWith("chrome-extension://")) {
+      return;
+    }
 
-  const trimmedUrl = trimUrl(url, "url");
-  console.log(trimmedUrl);
-  console.log(await toRedirect(trimmedUrl));
-
-  if (await toRedirect(trimmedUrl)) {
-    chrome.tabs.update(id, {
-      url: "https://tivoku.com/website-blocker/blocked",
-    });
+    if (await shouldBlockUrl(tab.url)) {
+      chrome.tabs.update(activeInfo.tabId, {
+        url: "https://tivoku.com/website-blocker/blocked",
+      });
+    } else {
+      console.log("Allowing URL on tab activation:", tab.url);
+    }
+  } catch (error) {
+    // Tab might not exist anymore
+    console.log("Could not check activated tab:", error);
   }
 });

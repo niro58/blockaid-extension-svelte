@@ -20,8 +20,8 @@ export function trimUrl(url: string, type: "url" | "domain" | "starts-with") {
     }
     url += "*";
   }
-  if (url.endsWith("/")) {
-    url = url.slice(0, -1);
+  if (!url.endsWith("/")) {
+    url += "/";
   }
   return url;
 }
