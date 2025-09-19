@@ -8,12 +8,13 @@
     RotateCw,
     Settings,
     Trash2,
+    Youtube,
   } from "lucide-svelte";
   import * as Tabs from "$lib/components/ui/tabs/index";
   import * as Card from "$lib/components/ui/card/index";
 
   import { Label } from "$lib/components/ui/label";
-  import { setUrlController } from "$lib/urlController.svelte";
+  import { setUrlController, type BlockedUrl } from "$lib/urlController.svelte";
   import { Button } from "$lib/components/ui/button";
   import { Switch } from "$lib/components/ui/switch";
   import { ScrollArea } from "$lib/components/ui/scroll-area";
@@ -22,6 +23,7 @@
   const urlController = setUrlController();
   import CurrentPageBlock from "$lib/components/current-page-block.svelte";
   import { fade, fly } from "svelte/transition";
+  import { trimUrl } from "$lib/utils";
   let currentPage = $state("");
 
   function addPage() {
@@ -30,8 +32,8 @@
     urlController.addPage(currentPage);
     currentPage = "";
   }
-</script>
 
+</script>
 <main>
   <div
     class="bg-gradient-to-b from-card to-background w-[400px] min-h-[200px] border"
@@ -55,8 +57,10 @@
           <CurrentPageBlock />
         </div>
         <Switch
-          bind:checked={() => urlController.settings.enabled,
-          (v) => (urlController.settings.enabled = v)}
+          bind:checked={
+            () => urlController.settings.enabled,
+            (v) => (urlController.settings.enabled = v)
+          }
         />
       </div>
 
@@ -82,10 +86,12 @@
                 <div class="flex space-x-2">
                   <Input
                     placeholder="Enter URL to block..."
-                    bind:value={() => currentPage,
-                    (v) => {
-                      currentPage = v;
-                    }}
+                    bind:value={
+                      () => currentPage,
+                      (v) => {
+                        currentPage = v;
+                      }
+                    }
                     onkeydown={(e) => {
                       if (e.key === "Enter") {
                         addPage();
@@ -162,17 +168,20 @@
                         <Label for="work-hour-start">From</Label>
                         <TimeInput
                           id="work-hour-start"
-                          bind:value={() =>
-                            urlController.settings.workHour.start,
-                          (v) => (urlController.settings.workHour.start = v)}
+                          bind:value={
+                            () => urlController.settings.workHour.start,
+                            (v) => (urlController.settings.workHour.start = v)
+                          }
                         />
                       </div>
                       <div>
                         <Label for="work-hour-end">To</Label>
                         <TimeInput
                           id="work-hour-end"
-                          bind:value={() => urlController.settings.workHour.end,
-                          (v) => (urlController.settings.workHour.end = v)}
+                          bind:value={
+                            () => urlController.settings.workHour.end,
+                            (v) => (urlController.settings.workHour.end = v)
+                          }
                         />
                       </div>
                     </div>
@@ -182,9 +191,10 @@
                     <Clock class="h-4 w-4 text-muted-foreground" />
                     <Label>Block on weekends</Label>
                     <Switch
-                      bind:checked={() =>
-                        urlController.settings.blockOnWeekends,
-                      (v) => (urlController.settings.blockOnWeekends = v)}
+                      bind:checked={
+                        () => urlController.settings.blockOnWeekends,
+                        (v) => (urlController.settings.blockOnWeekends = v)
+                      }
                     />
                   </div>
                 </div>

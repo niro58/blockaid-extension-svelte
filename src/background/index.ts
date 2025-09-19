@@ -53,9 +53,14 @@ async function shouldBlockUrl(url: string): Promise<boolean> {
   }
 
   // Check wildcard matches
-  const wildcardMatch = pages.some((page: BlockedUrl) =>
-    page.url.endsWith("*") && trimmedUrl.startsWith(page.url.slice(0, -1))
-  );
+  const wildcardMatch = pages.some((page: BlockedUrl) => {
+    if (!page.url.endsWith("*")) return false;
+    let newPageUrl = page.url.slice(0, -1);
+    if (newPageUrl.endsWith("/")) {
+      newPageUrl = newPageUrl.slice(0, -1);
+    }
+    return trimmedUrl.startsWith(newPageUrl);
+  });
 
   return wildcardMatch;
 }
